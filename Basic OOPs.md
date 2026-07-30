@@ -924,3 +924,526 @@ This is polymorphism.
   2. Run-Time Polymorphism → Method Overriding
 
 ---
+# 11. What is the Difference Between Method Overloading and Method Overriding?
+
+## Definition
+
+### Method Overloading
+
+**Method Overloading** is the process of defining **multiple methods with the same name but different parameter lists** in the **same class**.
+
+It is an example of **Compile-Time (Static) Polymorphism**.
+
+---
+
+### Method Overriding
+
+**Method Overriding** is the process where a **child class provides its own implementation** of a method that is already defined in its parent class.
+
+It is an example of **Run-Time (Dynamic) Polymorphism**.
+
+---
+
+# Method Overloading Example
+
+```java
+class Calculator {
+
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    int add(int a, int b, int c) {
+        return a + b + c;
+    }
+
+    double add(double a, double b) {
+        return a + b;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Calculator c = new Calculator();
+
+        System.out.println(c.add(10, 20));
+        System.out.println(c.add(10, 20, 30));
+        System.out.println(c.add(10.5, 20.5));
+    }
+}
+```
+
+### Output
+
+```text
+30
+60
+31.0
+```
+
+---
+
+# Method Overriding Example
+
+```java
+class Animal {
+
+    void sound() {
+        System.out.println("Animal makes a sound.");
+    }
+}
+
+class Dog extends Animal {
+
+    @Override
+    void sound() {
+        System.out.println("Dog barks.");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal a = new Dog();
+
+        a.sound();
+    }
+}
+```
+
+### Output
+
+```text
+Dog barks.
+```
+
+---
+
+# Difference Between Method Overloading and Method Overriding
+
+| Feature | Method Overloading | Method Overriding |
+|---------|--------------------|-------------------|
+| Definition | Same method name with **different parameter lists** | Child class provides a **new implementation** of a parent class method |
+| Polymorphism Type | Compile-Time (Static) | Run-Time (Dynamic) |
+| Binding | Early Binding | Late Binding |
+| Inheritance Required | ❌ No | ✅ Yes |
+| Class | Usually within the **same class** | Parent and Child classes |
+| Method Name | Same | Same |
+| Parameters | **Must be different** | **Must be the same** |
+| Return Type | Can be different (but not by return type alone) | Must be the same or covariant |
+| Access Modifier | No restriction | Cannot reduce the visibility of the parent method |
+| `static` Methods | Can be overloaded | Cannot be overridden (they are hidden) |
+| `final` Methods | Can be overloaded | Cannot be overridden |
+| Decision Made | At Compile Time | At Runtime |
+
+---
+
+# Key Rules
+
+## Method Overloading
+
+✔ Same method name
+
+✔ Different parameter list:
+- Number of parameters
+- Type of parameters
+- Order of parameters
+
+❌ Changing only the return type is **not** method overloading.
+
+Example:
+
+```java
+int sum(int a, int b)
+
+double sum(double a, double b)
+
+int sum(int a, int b, int c)
+```
+
+---
+
+## Method Overriding
+
+✔ Same method name
+
+✔ Same parameter list
+
+✔ Child class extends parent class
+
+✔ Use the `@Override` annotation (recommended)
+
+Example:
+
+```java
+class Animal {
+    void sound() { }
+}
+
+class Dog extends Animal {
+
+    @Override
+    void sound() { }
+}
+```
+
+---
+
+# Real-Life Example 🚗
+
+## Method Overloading
+
+Imagine a **calculator**.
+
+The **Add** button works differently based on the inputs:
+
+- Add(2,3)
+- Add(2,3,4)
+- Add(2.5,4.5)
+
+The operation name is the same, but the parameters differ.
+
+---
+
+## Method Overriding
+
+Imagine a **remote control**.
+
+Every TV has a **Power** button.
+
+- Samsung TV → Turns on Samsung TV.
+- Sony TV → Turns on Sony TV.
+- LG TV → Turns on LG TV.
+
+The button is the same, but each TV provides its own implementation.
+
+---
+
+# Quick Interview Revision
+
+## Method Overloading
+
+- Same method name
+- Different parameters
+- Same class
+- Compile-Time Polymorphism
+- No inheritance required
+
+---
+
+## Method Overriding
+
+- Same method name
+- Same parameters
+- Parent & Child classes
+- Run-Time Polymorphism
+- Inheritance required
+
+---
+
+# Covariant Return Type in Java
+
+## Definition
+
+A **Covariant Return Type** allows an overridden method in a child class to return a **more specific type (subclass)** than the return type declared in the parent class.
+
+This feature was introduced in **Java 5**.
+
+> **One-line Definition (Interview)**
+>
+> **A covariant return type allows an overridden method to return the same type or a subclass of the parent's return type.**
+
+---
+
+## Syntax
+
+```java
+class Parent {
+
+    Parent getObject() {
+        return new Parent();
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    Child getObject() {
+        return new Child();
+    }
+}
+```
+
+---
+
+## Example
+
+```java
+class Animal {
+
+    Animal getObject() {
+        System.out.println("Returning Animal");
+        return new Animal();
+    }
+}
+
+class Dog extends Animal {
+
+    @Override
+    Dog getObject() {
+        System.out.println("Returning Dog");
+        return new Dog();
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal a = new Dog();
+
+        Animal obj = a.getObject();
+    }
+}
+```
+
+### Output
+
+```text
+Returning Dog
+```
+
+---
+
+## Explanation
+
+### Parent Class
+
+```java
+Animal getObject()
+```
+
+The parent method returns an object of type `Animal`.
+
+---
+
+### Child Class
+
+```java
+Dog getObject()
+```
+
+The child overrides the method and returns a `Dog` object.
+
+Since **Dog is a subclass of Animal**, Java allows this.
+
+This is called a **Covariant Return Type**.
+
+---
+
+## Visual Representation
+
+```text
+        Animal
+           ▲
+           │
+          Dog
+```
+
+- Parent returns **Animal**
+- Child returns **Dog**
+
+✔ Allowed because **Dog IS-A Animal**.
+
+---
+
+## Valid Example
+
+```java
+class Vehicle { }
+
+class Car extends Vehicle { }
+
+class Parent {
+
+    Vehicle create() {
+        return new Vehicle();
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    Car create() {
+        return new Car();
+    }
+}
+```
+
+---
+
+## Invalid Example
+
+```java
+class Animal { }
+
+class Car { }
+
+class Parent {
+
+    Animal create() {
+        return new Animal();
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    Car create() {      // ❌ Compile-time Error
+        return new Car();
+    }
+}
+```
+
+### Why?
+
+`Car` is **not** a subclass of `Animal`.
+
+The overridden method can return:
+- ✅ The same return type
+- ✅ A subclass of the return type
+- ❌ An unrelated class
+
+---
+
+## Covariant Return Type Rules
+
+- Applicable only in **Method Overriding**.
+- Child class can return:
+  - The **same** return type.
+  - A **subclass** of the parent's return type.
+- Works only with **reference types (objects)**.
+- Does **not** work with primitive data types (`int`, `double`, `char`, etc.).
+
+---
+
+## Primitive Return Type Example
+
+```java
+class Parent {
+
+    int getValue() {
+        return 10;
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    int getValue() {
+        return 20;
+    }
+}
+```
+
+✔ Valid because the return type remains the same.
+
+---
+
+## Invalid Primitive Example
+
+```java
+class Parent {
+
+    int getValue() {
+        return 10;
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    double getValue() {      // ❌ Compile-time Error
+        return 20.5;
+    }
+}
+```
+
+Primitive return types **cannot** be changed while overriding.
+
+---
+
+## Advantages
+
+- Eliminates unnecessary type casting.
+- Improves code readability.
+- Provides more specific return types.
+- Enhances flexibility in method overriding.
+
+---
+
+## Quick Interview Revision
+
+- **Only used in Method Overriding.**
+- Child method can return:
+  - ✔ Same return type.
+  - ✔ Subclass of the parent's return type.
+- Applicable only to **reference types**.
+- Primitive return types cannot be changed.
+
+---
+
+## Interview Questions
+
+### What is a covariant return type?
+
+A covariant return type allows an overridden method to return a **more specific (subclass)** return type than the parent method.
+
+---
+
+### Does it work with primitive data types?
+
+**No.** It works only with **reference types (objects)**.
+
+---
+
+### Is a subclass return type mandatory?
+
+**No.** The child method can return:
+- The **same** return type.
+- A **subclass** of the parent's return type.
+
+---
+
+## Easy Trick to Remember
+
+```text
+Parent Return Type
+        │
+        ▼
+     Animal
+        ▲
+        │
+      Dog
+
+✔ Allowed
+```
+
+```text
+Parent Return Type
+        │
+        ▼
+     Animal
+
+        Car
+
+❌ Not Allowed
+```
+
+### Mnemonic
+
+> **Same or Child → Allowed**  
+> **Unrelated Type → Not Allowed**
