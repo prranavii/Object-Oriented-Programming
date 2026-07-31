@@ -1343,3 +1343,1161 @@ Different means:
 ### Mnemonic
 
 > **"One Class, Many Ways to Create Objects."**
+
+# 30. Can Constructors be Overridden?
+
+## Answer
+
+**No.**
+
+Constructors **cannot be overridden** in Java because they are **not inherited** by child classes.
+
+Method overriding requires **inheritance**, but constructors are not inherited. Therefore, overriding is not possible.
+
+> **One-line Answer (Interview)**
+>
+> **No. Constructors cannot be overridden because they are not inherited by subclasses.**
+
+---
+
+# Why Can't Constructors Be Overridden?
+
+To override a method:
+
+- The method must be inherited.
+- The child class must provide a new implementation of that inherited method.
+
+Constructors do **not** satisfy the first condition because they are **never inherited**.
+
+Every class has its own constructor, which is responsible for initializing objects of **that class only**.
+
+---
+
+# Example
+
+```java
+class Animal {
+
+    Animal() {
+        System.out.println("Animal Constructor");
+    }
+}
+
+class Dog extends Animal {
+
+    Dog() {
+        System.out.println("Dog Constructor");
+    }
+
+    public static void main(String[] args) {
+
+        Dog d = new Dog();
+    }
+}
+```
+
+### Output
+
+```text
+Animal Constructor
+Dog Constructor
+```
+
+---
+
+# Explanation
+
+When this statement executes:
+
+```java
+Dog d = new Dog();
+```
+
+Java performs the following steps:
+
+1. Calls the parent constructor (`Animal()`).
+2. Executes the child constructor (`Dog()`).
+
+The parent constructor is **called**, **not overridden**.
+
+This happens because Java automatically inserts:
+
+```java
+super();
+```
+
+as the first statement in every constructor (if you don't write it explicitly).
+
+---
+
+# Constructor Call Flow
+
+```text
+Dog()
+
+        │
+        ▼
+
+super()
+
+        │
+        ▼
+
+Animal()
+
+        │
+        ▼
+
+Returns to Dog()
+
+        │
+        ▼
+
+Dog Constructor Executes
+```
+
+---
+
+# Incorrect Attempt
+
+```java
+class Parent {
+
+    Parent() { }
+}
+
+class Child extends Parent {
+
+    Parent() { }    // ❌ Compile-time Error
+}
+```
+
+### Why?
+
+A constructor's name **must exactly match its own class name**.
+
+The constructor inside `Child` must be named:
+
+```java
+Child()
+```
+
+not
+
+```java
+Parent()
+```
+
+---
+
+# Parent Constructor vs Method Overriding
+
+### Constructor
+
+```java
+class Parent {
+
+    Parent() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    Child() {
+        System.out.println("Child");
+    }
+}
+```
+
+Constructors are **called** using `super()`, not overridden.
+
+---
+
+### Method
+
+```java
+class Parent {
+
+    void display() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    void display() {
+        System.out.println("Child");
+    }
+}
+```
+
+Methods **can** be overridden because they are inherited.
+
+---
+
+# Constructor Overloading vs Constructor Overriding
+
+| Constructor Overloading | Constructor Overriding |
+|--------------------------|------------------------|
+| ✅ Possible | ❌ Not Possible |
+| Same class | Parent & Child |
+| Different parameter lists | Not allowed |
+| Multiple constructors | Constructors are not inherited |
+
+---
+
+# Real-Life Example 🏠
+
+Imagine building a house.
+
+- Every floor has its **own construction process**.
+- The second floor **cannot replace** the construction process of the first floor.
+- It simply **builds on top of it**.
+
+Similarly:
+
+- The child constructor does **not replace** the parent constructor.
+- It calls the parent constructor first using `super()` and then performs its own initialization.
+
+---
+
+# Advantages of This Design
+
+- Ensures proper initialization of parent class members.
+- Maintains the object creation hierarchy.
+- Prevents accidental replacement of parent initialization logic.
+
+---
+
+# Quick Interview Revision
+
+- Constructors are **not inherited**.
+- Overriding requires inheritance.
+- Therefore, constructors **cannot be overridden**.
+- Parent constructors are invoked using `super()`.
+
+---
+
+# Interview Follow-up Questions
+
+## Can constructors be overloaded?
+
+**Yes.**
+
+A class can have multiple constructors with different parameter lists.
+
+---
+
+## Can constructors be inherited?
+
+**No.**
+
+Each class defines its own constructors.
+
+---
+
+## How is the parent constructor called?
+
+Using:
+
+```java
+super();
+```
+
+If not written explicitly, Java inserts it automatically (provided the parent has an accessible no-argument constructor).
+
+---
+
+## Can we call a parent constructor explicitly?
+
+**Yes.**
+
+```java
+class Parent {
+
+    Parent(String name) {
+        System.out.println(name);
+    }
+}
+
+class Child extends Parent {
+
+    Child() {
+        super("Alice");
+    }
+}
+```
+
+---
+
+# Easy Trick to Remember
+
+```text
+Constructors
+
+✔ Can be Overloaded
+✔ Can Call Parent using super()
+
+❌ Cannot be Overridden
+❌ Cannot be Inherited
+```
+
+### Mnemonic
+
+> **"Constructors Create Objects, They Don't Participate in Overriding."**
+
+# 31. Can Private Methods be Overloaded?
+
+## Answer
+
+**Yes.**
+
+**Private methods can be overloaded** because method overloading occurs **within the same class**, and access modifiers do not affect overloading.
+
+As long as the methods have the **same name** but **different parameter lists**, they can be overloaded—even if they are declared `private`.
+
+> **One-line Answer (Interview)**
+>
+> **Yes. Private methods can be overloaded because overloading depends on the method signature, not the access modifier.**
+
+---
+
+# Why is it Allowed?
+
+Method overloading depends on the **method signature**, which includes:
+
+- Method name
+- Number of parameters
+- Data types of parameters
+- Order of parameters
+
+It **does not depend** on:
+
+- Access modifiers (`private`, `protected`, `public`)
+- Return type
+
+Since all overloaded methods exist **inside the same class**, Java can distinguish them using their parameter lists.
+
+---
+
+# Example
+
+```java
+class Calculator {
+
+    private void add() {
+        System.out.println("No Parameters");
+    }
+
+    private void add(int a) {
+        System.out.println("One Integer: " + a);
+    }
+
+    private void add(int a, int b) {
+        System.out.println("Sum = " + (a + b));
+    }
+
+    public static void main(String[] args) {
+
+        Calculator c = new Calculator();
+
+        c.add();
+        c.add(10);
+        c.add(10, 20);
+    }
+}
+```
+
+### Output
+
+```text
+No Parameters
+One Integer: 10
+Sum = 30
+```
+
+---
+
+# How Does Java Choose the Correct Method?
+
+The compiler looks at the **arguments** passed during the method call.
+
+```java
+c.add();
+```
+
+Calls:
+
+```java
+add()
+```
+
+---
+
+```java
+c.add(10);
+```
+
+Calls:
+
+```java
+add(int)
+```
+
+---
+
+```java
+c.add(10, 20);
+```
+
+Calls:
+
+```java
+add(int, int)
+```
+
+This is decided at **compile time**, which is why method overloading is known as **Compile-Time Polymorphism**.
+
+---
+
+# Invalid Example
+
+Changing only the return type is **not** overloading.
+
+```java
+class Demo {
+
+    private int show(int x) {
+        return x;
+    }
+
+    private double show(int x) {   // ❌ Compile-time Error
+        return x;
+    }
+}
+```
+
+### Why?
+
+Both methods have the **same name** and **same parameter list**.
+
+The return type alone cannot distinguish overloaded methods.
+
+---
+
+# Private Methods: Overloading vs Overriding
+
+## Overloading ✔
+
+```java
+class Parent {
+
+    private void display() { }
+
+    private void display(int x) { }
+}
+```
+
+✔ Allowed because both methods are in the **same class**.
+
+---
+
+## Overriding ❌
+
+```java
+class Parent {
+
+    private void display() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    void display() {
+        System.out.println("Child");
+    }
+}
+```
+
+This is **not** method overriding.
+
+**Reason:** Private methods are **not inherited**, so the child class cannot override them.
+
+---
+
+# Real-Life Example 🔒
+
+Imagine a company.
+
+A manager has several **private notes**.
+
+They can organize those notes in different formats:
+
+```text
+note()
+note(String title)
+note(String title, int priority)
+```
+
+The notes are still **private**, but they can exist in multiple forms.
+
+This is similar to **private method overloading**.
+
+---
+
+# Advantages
+
+- Improves readability.
+- Provides flexibility within the class.
+- Reduces the need for multiple method names.
+- Keeps implementation details hidden while supporting multiple input formats.
+
+---
+
+# Quick Interview Revision
+
+- Private methods **can** be overloaded.
+- Overloading depends on the **method signature**.
+- Access modifiers do **not** affect overloading.
+- Private methods **cannot** be overridden.
+
+---
+
+# Interview Follow-up Questions
+
+## Can private methods be overloaded?
+
+**Yes.**
+
+They can have different parameter lists within the same class.
+
+---
+
+## Can private methods be overridden?
+
+**No.**
+
+Private methods are not inherited by child classes.
+
+---
+
+## Does the access modifier affect method overloading?
+
+**No.**
+
+Only the **method signature** matters.
+
+---
+
+## Can private static methods be overloaded?
+
+**Yes.**
+
+```java
+class Demo {
+
+    private static void show() { }
+
+    private static void show(int x) { }
+}
+```
+
+✔ Valid.
+
+---
+
+# Easy Trick to Remember
+
+```text
+Private Methods
+
+✔ Can be Overloaded
+❌ Cannot be Overridden
+```
+
+### Mnemonic
+
+> **"Private Stays Inside the Class—So It Can Overload, But It Can't Be Overridden."**
+
+# 32. Can Private Methods be Overridden?
+
+## Answer
+
+**No.**
+
+**Private methods cannot be overridden** because they are **not inherited** by child classes.
+
+Method overriding requires inheritance. Since private methods are accessible **only within the class in which they are declared**, the child class cannot inherit or override them.
+
+> **One-line Answer (Interview)**
+>
+> **No. Private methods cannot be overridden because they are not inherited by subclasses.**
+
+---
+
+# Why Can't Private Methods be Overridden?
+
+For method overriding to occur:
+
+1. The method must be **inherited** by the child class.
+2. The child class must provide its own implementation.
+
+Private methods fail the first condition because they are **not visible outside their own class**.
+
+```text
+Parent Class
+    │
+private method
+    │
+    ✖ Not Inherited
+    │
+Child Class
+```
+
+Since the child class does not inherit the private method, there is nothing to override.
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    private void display() {
+        System.out.println("Parent Display");
+    }
+
+    public void show() {
+        display();      // Calls Parent's private method
+    }
+}
+
+class Child extends Parent {
+
+    void display() {
+        System.out.println("Child Display");
+    }
+
+    public static void main(String[] args) {
+
+        Child c = new Child();
+
+        c.display();    // Calls Child's method
+        c.show();       // Calls Parent's private method
+    }
+}
+```
+
+### Output
+
+```text
+Child Display
+Parent Display
+```
+
+---
+
+# Explanation
+
+The `Child` class defines a method named `display()`.
+
+```java
+void display() {
+    System.out.println("Child Display");
+}
+```
+
+This **does not override** the parent's private method.
+
+Instead, it creates a **new and unrelated method** with the same name.
+
+When:
+
+```java
+c.display();
+```
+
+The child method is executed.
+
+When:
+
+```java
+c.show();
+```
+
+The `show()` method belongs to `Parent`, so it internally calls the parent's private `display()`.
+
+---
+
+# Visual Representation
+
+```text
+Parent
+
+private display()
+
+        │
+        │  (Not Inherited)
+        ▼
+
+Child
+
+display()
+```
+
+These are **two separate methods**, not an overridden pair.
+
+---
+
+# Why Doesn't `@Override` Work?
+
+```java
+class Parent {
+
+    private void display() { }
+}
+
+class Child extends Parent {
+
+    @Override
+    void display() { }      // ❌ Compile-time Error
+}
+```
+
+### Error
+
+```text
+Method does not override or implement a method from a supertype
+```
+
+The compiler reports an error because there is **no inherited method** to override.
+
+---
+
+# Private Methods vs Public Methods
+
+### Public Method (Overriding ✔)
+
+```java
+class Parent {
+
+    public void display() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    public void display() {
+        System.out.println("Child");
+    }
+}
+```
+
+✔ This is method overriding.
+
+---
+
+### Private Method (Overriding ❌)
+
+```java
+class Parent {
+
+    private void display() { }
+}
+
+class Child extends Parent {
+
+    void display() { }
+}
+```
+
+❌ This is **not** method overriding.
+
+---
+
+# Real-Life Example 🔒
+
+Imagine a company.
+
+The CEO has a **private diary**.
+
+Employees cannot access or modify it.
+
+If an employee creates their **own diary**, it is completely separate from the CEO's diary.
+
+Similarly:
+
+- Parent's private method → Only the parent class can access it.
+- Child's method with the same name → A completely new method.
+
+---
+
+# Private Method vs Protected Method
+
+| Feature | Private Method | Protected Method |
+|---------|----------------|------------------|
+| Inherited | ❌ No | ✅ Yes |
+| Can be Overridden | ❌ No | ✅ Yes |
+| Accessible in Child Class | ❌ No | ✅ Yes |
+
+---
+
+# Advantages of Private Methods
+
+- Improves encapsulation.
+- Hides implementation details.
+- Prevents accidental overriding.
+- Increases security.
+
+---
+
+# Can Final Methods be Overloaded?
+
+## Answer
+
+**Yes.**
+
+A **final method can be overloaded** in Java because **method overloading depends on the method signature**, not on whether the method is declared `final`.
+
+The `final` keyword only prevents **method overriding** in a subclass. It does **not** prevent creating multiple methods with the same name but different parameter lists in the same class.
+
+> **One-line Answer (Interview)**
+>
+> **Yes. Final methods can be overloaded because overloading occurs within the same class and depends on different parameter lists, while `final` only prevents overriding.**
+
+---
+
+# Why is it Allowed?
+
+Method overloading and method overriding are different concepts.
+
+- **Method Overloading** → Same class, different parameter lists.
+- **Method Overriding** → Parent and child classes, same method signature.
+
+The `final` keyword only affects **overriding**, not overloading.
+
+---
+
+# Example
+
+```java
+class Calculator {
+
+    final void add() {
+        System.out.println("No Parameters");
+    }
+
+    final void add(int a) {
+        System.out.println("One Number: " + a);
+    }
+
+    final void add(int a, int b) {
+        System.out.println("Sum = " + (a + b));
+    }
+
+    public static void main(String[] args) {
+
+        Calculator c = new Calculator();
+
+        c.add();
+        c.add(10);
+        c.add(10, 20);
+    }
+}
+```
+
+### Output
+
+```text
+No Parameters
+One Number: 10
+Sum = 30
+```
+
+---
+
+# Why Can't a Final Method be Overridden?
+
+```java
+class Parent {
+
+    final void display() {
+        System.out.println("Parent Display");
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    void display() {      // ❌ Compile-time Error
+        System.out.println("Child Display");
+    }
+}
+```
+
+### Error
+
+```text
+Cannot override the final method from Parent
+```
+
+A `final` method is considered complete and cannot be modified by subclasses.
+
+---
+
+# Overloading vs Overriding of Final Methods
+
+### ✔ Final Method Overloading
+
+```java
+class Demo {
+
+    final void show() { }
+
+    final void show(int x) { }
+
+    final void show(String msg) { }
+}
+```
+
+**Result:** ✔ Valid
+
+---
+
+### ❌ Final Method Overriding
+
+```java
+class Parent {
+
+    final void show() { }
+}
+
+class Child extends Parent {
+
+    void show() { }     // ❌ Compile-time Error
+}
+```
+
+**Result:** ❌ Invalid
+
+---
+
+# Real-Life Example 📚
+
+Imagine a textbook.
+
+The chapter **"Introduction"** is marked as **final**.
+
+- Another author **cannot rewrite** that chapter. (No overriding.)
+- The same author can write:
+  - `Introduction()`
+  - `Introduction(String topic)`
+  - `Introduction(String topic, int page)`
+
+These are different versions with different inputs, similar to **method overloading**.
+
+---
+
+# Advantages of Final Methods
+
+- Protects important business logic.
+- Prevents accidental overriding.
+- Ensures consistent behavior in subclasses.
+- Still allows flexibility through overloading.
+
+---
+
+# Final Method vs Normal Method
+
+| Feature | Final Method | Normal Method |
+|---------|--------------|---------------|
+| Can be Overloaded | ✅ Yes | ✅ Yes |
+| Can be Overridden | ❌ No | ✅ Yes |
+| Inherited | ✅ Yes | ✅ Yes |
+
+---
+
+# Quick Interview Revision
+
+- `final` methods **can** be overloaded.
+- `final` methods **cannot** be overridden.
+- Overloading depends on **different parameter lists**.
+- `final` only restricts overriding.
+
+---
+
+# 34. Can Final Methods be Overridden?
+
+## Answer
+
+**No.**
+
+A **final method cannot be overridden** in Java because the `final` keyword prevents a subclass from changing the implementation of that method.
+
+When a method is declared as `final`, it becomes the **final implementation**, and all subclasses must use it as it is.
+
+> **One-line Answer (Interview)**
+>
+> **No. Final methods cannot be overridden because the `final` keyword prevents subclasses from providing a new implementation.**
+
+---
+
+# Why Can't Final Methods be Overridden?
+
+Method overriding allows a child class to provide its own implementation of a parent class method.
+
+However, when a method is marked as `final`, Java locks its implementation to ensure that it cannot be modified by subclasses.
+
+```text
+Parent Class
+
+final method()
+
+        │
+        │
+        ✖ Cannot Override
+        │
+Child Class
+```
+
+This helps preserve important or sensitive business logic.
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    final void display() {
+        System.out.println("Parent Display");
+    }
+}
+
+class Child extends Parent {
+
+    @Override
+    void display() {      // ❌ Compile-time Error
+        System.out.println("Child Display");
+    }
+}
+```
+
+### Compile-Time Error
+
+```text
+Cannot override the final method from Parent
+```
+
+---
+
+# Valid Example
+
+```java
+class Parent {
+
+    final void display() {
+        System.out.println("Parent Display");
+    }
+}
+
+class Child extends Parent {
+
+    void show() {
+        System.out.println("Child Method");
+    }
+
+    public static void main(String[] args) {
+
+        Child obj = new Child();
+
+        obj.display();   // Inherited final method
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+Parent Display
+Child Method
+```
+
+The child class **inherits** the `final` method and can use it, but **cannot modify it**.
+
+---
+
+# Why Do We Use Final Methods?
+
+Suppose a banking application has a method that verifies a user's PIN.
+
+```java
+class BankAccount {
+
+    final void verifyPIN() {
+        System.out.println("PIN Verified");
+    }
+}
+```
+
+If subclasses were allowed to override this method, someone could bypass or weaken the security logic.
+
+Using `final` ensures that the original implementation is always used.
+
+---
+
+# Final Method vs Normal Method
+
+| Feature | Final Method | Normal Method |
+|---------|--------------|---------------|
+| Can be Overridden | ❌ No | ✅ Yes |
+| Can be Overloaded | ✅ Yes | ✅ Yes |
+| Inherited | ✅ Yes | ✅ Yes |
+| Can Change Behavior in Child Class | ❌ No | ✅ Yes |
+
+---
+
+# Final Method vs Final Class
+
+| Final Method | Final Class |
+|--------------|-------------|
+| Prevents method overriding | Prevents class inheritance |
+| Child class can still inherit the class | No child class can extend it |
+
+---
+
+# Real-Life Example 🚦
+
+Think of traffic rules.
+
+A **red light means STOP**.
+
+No driver can decide to change that rule.
+
+Similarly, a `final` method defines behavior that **cannot be changed by subclasses**.
+
+---
+
+# Advantages of Final Methods
+
+- Prevents accidental overriding.
+- Protects critical business logic.
+- Ensures consistent behavior across all subclasses.
+- Improves code reliability and maintainability.
+
+---
+
+# Quick Interview Revision
+
+- `final` methods **cannot** be overridden.
+- They **can** be inherited.
+- They **can** be overloaded.
+- The `final` keyword protects the method implementation.
+
+---
