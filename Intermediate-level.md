@@ -2501,3 +2501,855 @@ Similarly, a `final` method defines behavior that **cannot be changed by subclas
 - The `final` keyword protects the method implementation.
 
 ---
+
+# 36. What is Method Hiding in Java?
+
+## Definition
+
+**Method Hiding** is a feature in Java where a **child class declares a static method with the same name and the same parameter list as a static method in the parent class**.
+
+In this case, the child class **hides** the parent's static method instead of overriding it.
+
+Method hiding occurs **only with static methods**.
+
+> **One-line Definition (Interview)**
+>
+> **Method Hiding occurs when a child class defines a static method with the same signature as a static method in the parent class.**
+
+---
+
+# Why Does Method Hiding Happen?
+
+Static methods belong to the **class**, not to objects.
+
+Since they are resolved at **compile time**, Java cannot perform **runtime polymorphism** on them.
+
+Therefore, when a child class defines a static method with the same signature, it **hides** the parent's method instead of overriding it.
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    static void display() {
+        System.out.println("Parent Static Method");
+    }
+}
+
+class Child extends Parent {
+
+    static void display() {
+        System.out.println("Child Static Method");
+    }
+
+    public static void main(String[] args) {
+
+        Parent p = new Parent();
+        Child c = new Child();
+
+        p.display();
+        c.display();
+    }
+}
+```
+
+### Output
+
+```text
+Parent Static Method
+Child Static Method
+```
+
+---
+
+# Method Hiding with Parent Reference
+
+```java
+class Parent {
+
+    static void show() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    static void show() {
+        System.out.println("Child");
+    }
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child();
+
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+Parent
+```
+
+---
+
+# Explanation
+
+```java
+Parent obj = new Child();
+```
+
+- **Reference Type:** `Parent`
+- **Object Type:** `Child`
+
+When calling:
+
+```java
+obj.show();
+```
+
+Java checks the **reference type**, not the object type, because `show()` is **static**.
+
+Therefore, it executes:
+
+```java
+Parent.show();
+```
+
+This is called **Method Hiding**.
+
+---
+
+# Memory Representation
+
+```text
+Parent Class
+-----------------
+display()
+-----------------
+
+        ▲
+        │
+inherits
+        │
+
+Child Class
+-----------------
+display()
+-----------------
+```
+
+The child class has its own static method.
+
+It **does not replace** the parent's method.
+
+Both methods exist independently.
+
+---
+
+# Method Hiding vs Method Overriding
+
+| Method Hiding | Method Overriding |
+|---------------|-------------------|
+| Static methods | Instance methods |
+| Compile-time binding | Runtime binding |
+| Depends on reference type | Depends on object type |
+| No runtime polymorphism | Supports runtime polymorphism |
+| Parent method is hidden | Parent method is overridden |
+
+---
+
+# Method Hiding vs Method Overloading
+
+| Method Hiding | Method Overloading |
+|---------------|--------------------|
+| Parent & Child classes | Same class |
+| Same method name | Same method name |
+| Same parameter list | Different parameter lists |
+| Static methods | Any methods |
+| Compile-time binding | Compile-time binding |
+
+---
+
+# Real-Life Example 🏫
+
+Imagine a school.
+
+The principal publishes a **school notice**.
+
+Each classroom can publish its own notice with the same title.
+
+When you look at the classroom notice board, you see the classroom's notice.
+
+The principal's notice still exists—it has just been **hidden**, not replaced.
+
+Similarly:
+
+- Parent static method → School notice.
+- Child static method → Classroom notice.
+
+The child method hides the parent method.
+
+---
+
+# Advantages of Method Hiding
+
+- Allows a subclass to define its own class-level behavior.
+- Maintains separate implementations for parent and child classes.
+- Useful when class-specific static functionality is needed.
+
+---
+
+# Quick Interview Revision
+
+- Applies only to **static methods**.
+- Same method name and same parameter list.
+- Parent and child classes.
+- Compile-time binding.
+- Depends on **reference type**.
+- Not runtime polymorphism.
+
+---
+
+# 37. Can the `main()` Method be Overloaded?
+
+## Answer
+
+**Yes.**
+
+The `main()` method **can be overloaded** in Java because it is just like any other **static method**.
+
+You can define multiple `main()` methods with different parameter lists. However, **the JVM always starts execution from the standard `main()` method**.
+
+> **Standard Main Method**
+>
+> ```java
+> public static void main(String[] args)
+> ```
+
+> **One-line Answer (Interview)**
+>
+> **Yes. The `main()` method can be overloaded, but the JVM invokes only the standard `public static void main(String[] args)` method.**
+
+---
+
+# Why is it Allowed?
+
+Method overloading depends on:
+
+- Same method name
+- Different parameter lists
+
+Since `main()` is a method, it follows the same overloading rules.
+
+---
+
+# Example
+
+```java
+class Demo {
+
+    public static void main(String[] args) {
+
+        System.out.println("Original Main");
+
+        main(10);
+        main("Java");
+    }
+
+    static void main(int x) {
+        System.out.println("Integer Main: " + x);
+    }
+
+    static void main(String name) {
+        System.out.println("String Main: " + name);
+    }
+}
+```
+
+### Output
+
+```text
+Original Main
+Integer Main: 10
+String Main: Java
+```
+
+---
+
+# What Happens if the Standard `main()` is Missing?
+
+```java
+class Demo {
+
+    static void main(int x) {
+        System.out.println(x);
+    }
+}
+```
+
+### Result
+
+```text
+Error: Main method not found in class Demo
+```
+
+The JVM searches specifically for:
+
+```java
+public static void main(String[] args)
+```
+
+If it is not found, the program cannot start.
+
+---
+
+# Rules for Overloading `main()`
+
+- Same method name (`main`)
+- Different parameter list
+- Standard `main()` must exist if the class is to be executed directly by the JVM
+
+---
+
+# Real-Life Example 🚪
+
+Imagine a building.
+
+The **main entrance** is the only entrance visitors use to enter.
+
+Inside the building, there may be many other doors.
+
+Similarly:
+
+- Standard `main()` → Main entrance (used by the JVM)
+- Overloaded `main()` methods → Internal doors (called manually from code)
+
+---
+
+# Advantages
+
+- Useful for testing.
+- Allows helper versions of `main()`.
+- Demonstrates method overloading concepts.
+
+---
+
+# Quick Interview Revision
+
+- `main()` **can** be overloaded.
+- JVM calls only:
+  ```java
+  public static void main(String[] args)
+  ```
+- Other overloaded `main()` methods must be called explicitly.
+
+---
+
+# Interview Follow-up Questions
+
+## Which `main()` method does the JVM execute?
+
+Only:
+
+```java
+public static void main(String[] args)
+```
+
+---
+
+## Can overloaded `main()` methods execute automatically?
+
+**No.**
+
+They must be called from the standard `main()` method or another method.
+
+---
+
+# Easy Trick to Remember
+
+```text
+main()
+
+✔ Can be Overloaded
+
+JVM Starts Only From
+
+public static void main(String[] args)
+```
+
+### Mnemonic
+
+> **"Many `main()` Methods, One JVM Entry Point."**
+
+# 38. Can the `main()` Method be Overridden?
+
+## Answer
+
+**No.**
+
+The `main()` method **cannot be overridden** because it is **static**.
+
+Static methods belong to the **class**, not to objects. If a child class defines another `main()` method with the same signature, it **hides** the parent's `main()` method instead of overriding it.
+
+> **One-line Answer (Interview)**
+>
+> **No. The `main()` method cannot be overridden because it is static. A child class defining its own `main()` method results in method hiding, not overriding.**
+
+---
+
+# Why Can't `main()` be Overridden?
+
+The standard `main()` method is declared as:
+
+```java
+public static void main(String[] args)
+```
+
+Since it is **static**, it follows the rules of static methods:
+
+- Static methods cannot be overridden.
+- They can only be hidden.
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    public static void main(String[] args) {
+        System.out.println("Parent Main");
+    }
+}
+
+class Child extends Parent {
+
+    public static void main(String[] args) {
+        System.out.println("Child Main");
+    }
+}
+```
+
+---
+
+# What Happens?
+
+If you run:
+
+```text
+Parent
+```
+
+### Output
+
+```text
+Parent Main
+```
+
+If you run:
+
+```text
+Child
+```
+
+### Output
+
+```text
+Child Main
+```
+
+Each class has its **own** `main()` method.
+
+The child's `main()` **does not override** the parent's `main()`.
+
+---
+
+# Explanation
+
+Both methods exist independently.
+
+```text
+Parent Class
+
+main()
+
+        ▲
+        │
+inherits
+        │
+
+Child Class
+
+main()
+```
+
+The child's method **hides** the parent's method.
+
+---
+
+# Method Hiding Example
+
+```java
+class Parent {
+
+    static void show() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    static void show() {
+        System.out.println("Child");
+    }
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child();
+
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+Parent
+```
+
+This demonstrates **method hiding**, which is the same concept that applies to `main()`.
+
+---
+
+# `main()` Overloading vs Overriding
+
+| Feature | Overloading | Overriding |
+|---------|-------------|------------|
+| Allowed? | ✅ Yes | ❌ No |
+| Reason | Different parameter lists | `main()` is static |
+| JVM Entry Point | Standard `main()` only | Not applicable |
+
+---
+
+# Real-Life Example 🏫
+
+Think of a school.
+
+Each classroom has its own notice board.
+
+The notice board in one classroom does **not replace** the notice board in another classroom.
+
+Similarly:
+
+- Parent class has its own `main()`.
+- Child class has its own `main()`.
+- One does not override the other.
+
+---
+
+# Quick Interview Revision
+
+- `main()` is **static**.
+- Static methods **cannot** be overridden.
+- Child `main()` methods **hide** parent `main()` methods.
+- Each class can have its own entry point.
+
+---
+
+# Interview Follow-up Questions
+
+## Can `main()` be overloaded?
+
+**Yes.**
+
+By changing the parameter list.
+
+---
+
+## Can `main()` be hidden?
+
+**Yes.**
+
+Because it is a static method.
+
+---
+
+## Which `main()` runs?
+
+The `main()` of the class you execute.
+
+Example:
+
+```bash
+java Parent
+```
+
+Runs `Parent.main()`.
+
+```bash
+java Child
+```
+
+Runs `Child.main()`.
+
+---
+
+# Easy Trick to Remember
+
+```text
+main()
+
+✔ Can be Overloaded
+✔ Can be Hidden
+❌ Cannot be Overridden
+```
+
+### Mnemonic
+
+> **"`main()` is Static → It Hides, It Doesn't Override."**
+
+# 39. Can a Class be Both `abstract` and `final`?
+
+## Answer
+
+**No.**
+
+A class **cannot** be declared as both **`abstract`** and **`final`** because these two keywords have **opposite meanings**.
+
+- **`abstract`** means the class **must be inherited** so that its abstract methods can be implemented.
+- **`final`** means the class **cannot be inherited**.
+
+Since a class cannot be both inherited and not inherited at the same time, Java does not allow a class to be both `abstract` and `final`.
+
+> **One-line Answer (Interview)**
+>
+> **No. A class cannot be both `abstract` and `final` because `abstract` requires inheritance, while `final` prevents inheritance.**
+
+---
+
+# Why is it Not Allowed?
+
+### `abstract` Class
+
+An abstract class is **incomplete**.
+
+It is designed to be **extended** by another class.
+
+```java
+abstract class Animal {
+
+    abstract void sound();
+}
+```
+
+---
+
+### `final` Class
+
+A final class is **complete**.
+
+It **cannot be extended**.
+
+```java
+final class Animal { }
+```
+
+---
+
+Combining both:
+
+```java
+abstract final class Animal { }   // ❌ Compile-time Error
+```
+
+creates a contradiction.
+
+- `abstract` → "Please inherit me."
+- `final` → "No one can inherit me."
+
+---
+
+# Example
+
+```java
+abstract final class Animal {
+
+    abstract void sound();
+}
+```
+
+### Compile-Time Error
+
+```text
+Illegal combination of modifiers: abstract and final
+```
+
+---
+
+# Visual Representation
+
+```text
+abstract
+     │
+     ▼
+Must Be Inherited
+```
+
+```text
+final
+     │
+     ▼
+Cannot Be Inherited
+```
+
+```text
+abstract + final
+
+Must Be Inherited
+        +
+Cannot Be Inherited
+
+❌ Contradiction
+```
+
+---
+
+# Real-Life Example 🚪
+
+Imagine a door with two instructions:
+
+```text
+Door 1:
+"Please Enter"
+
+Door 2:
+"Do Not Enter"
+```
+
+Now imagine a single door displaying both messages:
+
+```text
+Please Enter
+Do Not Enter
+```
+
+This is contradictory.
+
+Similarly:
+
+- `abstract` → "Subclass me."
+- `final` → "Don't subclass me."
+
+Therefore, Java does not allow both together.
+
+---
+
+# Abstract Class vs Final Class
+
+| Abstract Class | Final Class |
+|----------------|-------------|
+| Can be inherited | Cannot be inherited |
+| May contain abstract methods | Cannot contain abstract methods (since it cannot be extended) |
+| Used as a base class | Used to prevent inheritance |
+| Incomplete implementation | Complete implementation |
+
+---
+
+# Advantages
+
+### Abstract Class
+
+- Supports abstraction.
+- Encourages code reuse.
+- Provides a common base for subclasses.
+
+### Final Class
+
+- Prevents inheritance.
+- Protects implementation.
+- Improves security and immutability.
+
+---
+
+# Quick Interview Revision
+
+- `abstract` → Must be inherited.
+- `final` → Cannot be inherited.
+- `abstract + final` → ❌ Not allowed.
+
+---
+
+# Interview Follow-up Questions
+
+## Can an abstract class have final methods?
+
+**Yes.**
+
+A final method can exist in an abstract class.
+
+```java
+abstract class Animal {
+
+    final void eat() {
+        System.out.println("Eating");
+    }
+
+    abstract void sound();
+}
+```
+
+Here:
+
+- `eat()` cannot be overridden.
+- `sound()` must be implemented by subclasses.
+
+✔ Valid.
+
+---
+
+## Can an abstract method be final?
+
+**No.**
+
+An abstract method **must be overridden**, while a final method **cannot be overridden**.
+
+```java
+abstract class Animal {
+
+    final abstract void sound();    // ❌ Compile-time Error
+}
+```
+
+This is contradictory.
+
+---
+
+## Can a final class have abstract methods?
+
+**No.**
+
+Since a final class cannot be inherited, there is no subclass to implement the abstract methods.
+
+---
+
+# Easy Trick to Remember
+
+```text
+abstract → Must Extend
+
+final → Cannot Extend
+
+abstract + final
+
+❌ Not Allowed
+```
+
+### Mnemonic
+
+> **"`abstract` Wants Inheritance, `final` Stops Inheritance."**
