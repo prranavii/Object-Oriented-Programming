@@ -350,3 +350,297 @@ The same reference works with multiple subclasses.
 This is the foundation of **Runtime Polymorphism**.
 
 ---
+
+# 57. Which Members are Decided Using Reference Type and Which Using Object Type?
+
+## Definition
+
+When a parent reference points to a child object:
+
+```java
+Parent obj = new Child();
+```
+
+Java uses **both the reference type and the object type**, but for different purposes.
+
+- **Reference Type** determines **what members are accessible** at compile time.
+- **Object Type** determines **which overridden instance method executes** at runtime.
+
+> **One-line Answer (Interview)**
+>
+> **Reference type decides member accessibility, while object type decides the execution of overridden instance methods.**
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    int x = 10;
+
+    static int y = 100;
+
+    void show() {
+        System.out.println("Parent show()");
+    }
+
+    static void display() {
+        System.out.println("Parent display()");
+    }
+}
+
+class Child extends Parent {
+
+    int x = 20;
+
+    static int y = 200;
+
+    @Override
+    void show() {
+        System.out.println("Child show()");
+    }
+
+    static void display() {
+        System.out.println("Child display()");
+    }
+
+    void childMethod() {
+        System.out.println("Child Method");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child();
+
+        System.out.println(obj.x);
+        System.out.println(obj.y);
+
+        obj.show();
+        obj.display();
+
+        // obj.childMethod();   ❌ Compile-time Error
+    }
+}
+```
+
+### Output
+
+```text
+10
+100
+Child show()
+Parent display()
+```
+
+---
+
+# Explanation
+
+## 1. Instance Variables
+
+```java
+System.out.println(obj.x);
+```
+
+Output:
+
+```text
+10
+```
+
+### Why?
+
+Variables are resolved at **compile time**.
+
+Java checks the **reference type** (`Parent`), so it accesses:
+
+```java
+Parent.x
+```
+
+---
+
+## 2. Static Variables
+
+```java
+System.out.println(obj.y);
+```
+
+Output:
+
+```text
+100
+```
+
+Static variables belong to the class.
+
+They are resolved using the **reference type**.
+
+---
+
+## 3. Instance Methods (Overridden)
+
+```java
+obj.show();
+```
+
+Output:
+
+```text
+Child show()
+```
+
+Java checks the **actual object type** (`Child`) at runtime.
+
+This is called **Dynamic Method Dispatch**.
+
+---
+
+## 4. Static Methods
+
+```java
+obj.display();
+```
+
+Output:
+
+```text
+Parent display()
+```
+
+Static methods belong to the class, not the object.
+
+They are resolved using the **reference type**.
+
+This is **Method Hiding**, not Method Overriding.
+
+---
+
+## 5. Child-Specific Methods
+
+```java
+obj.childMethod();
+```
+
+❌ Compile-time Error
+
+Why?
+
+The compiler only checks the **reference type** (`Parent`).
+
+Since `Parent` doesn't declare `childMethod()`, it cannot be accessed directly.
+
+---
+
+# Complete Summary Table
+
+| Member | Decided By | Runtime Polymorphism? |
+|---------|------------|-----------------------|
+| Instance Variable | **Reference Type** | ❌ No |
+| Static Variable | **Reference Type** | ❌ No |
+| Static Method | **Reference Type** | ❌ No (Method Hiding) |
+| Overridden Instance Method | **Object Type** | ✅ Yes |
+| Child-Specific Method | **Reference Type** (must exist in parent) | ❌ Not directly accessible |
+
+---
+
+# Memory Representation
+
+```java
+Parent obj = new Child();
+```
+
+```text
+Reference Type
+
+Parent obj
+     │
+     ▼
+
+Object Type
+
+Child Object
+```
+
+There is **only one object** in memory:
+
+```text
+Child Object
+```
+
+The `Parent` reference simply points to it.
+
+---
+
+# Real-Life Example 🚗
+
+Imagine a **Vehicle** reference pointing to a **Car** object.
+
+```java
+Vehicle v = new Car();
+```
+
+The compiler only knows about methods available in `Vehicle`.
+
+```text
+Vehicle
+--------
+start()
+stop()
+```
+
+So these are allowed:
+
+```java
+v.start();
+v.stop();
+```
+
+Suppose `Car` has:
+
+```java
+openSunroof();
+```
+
+Then:
+
+```java
+v.openSunroof();
+```
+
+❌ Compile-time Error
+
+because `Vehicle` doesn't declare `openSunroof()`.
+
+However, if `start()` is overridden in `Car`, then:
+
+```java
+v.start();
+```
+
+executes **Car's** version because Java checks the **object type** at runtime.
+
+---
+
+# Why Does Java Do This?
+
+Java separates responsibilities:
+
+### Compile Time
+
+The compiler uses the **reference type** to verify that the method or variable exists.
+
+### Runtime
+
+For overridden **instance methods**, Java uses the **object type** to achieve polymorphism.
+
+This provides both:
+
+- **Type safety**
+- **Runtime flexibility**
+
+---
