@@ -1198,75 +1198,631 @@ The interface specifies **what must be provided**, but each manufacturer decides
 
 ---
 
-# Interview Follow-up Questions
+# Why Doesn't Java Support Multiple Inheritance Through Classes?
 
-## Can an abstract class implement an interface?
+## Answer
 
-**Yes.**
+Java **does not support multiple inheritance through classes** because it can lead to **ambiguity**, commonly known as the **Diamond Problem**.
+
+If a class inherits from two parent classes that contain the same method, the compiler cannot determine **which parent's method should be inherited**.
+
+To avoid this ambiguity and keep Java simple and predictable, multiple inheritance of classes is not allowed.
+
+> **One-line Answer (Interview)**
+>
+> **Java does not support multiple inheritance through classes to avoid ambiguity (Diamond Problem) and maintain code simplicity.**
+
+---
+
+# What is the Diamond Problem?
+
+Suppose Java allowed this:
 
 ```java
-abstract class Animal implements Runnable {
+class A {
+
+    void show() {
+        System.out.println("Class A");
+    }
+}
+
+class B extends A {
+
+}
+
+class C extends A {
+
+}
+
+class D extends B, C {      // ❌ Not Allowed in Java
 
 }
 ```
 
----
-
-## Can an interface extend another interface?
-
-**Yes.**
+Now imagine:
 
 ```java
-interface A { }
+D obj = new D();
 
-interface B extends A { }
+obj.show();
 ```
 
+Question:
+
+Which `show()` should Java execute?
+
+- `B`'s inherited version?
+- `C`'s inherited version?
+
+This creates ambiguity.
+
 ---
 
-## Can a class extend multiple abstract classes?
-
-**No.**
-
-Java does not support multiple inheritance of classes.
-
----
-
-## Can a class implement multiple interfaces?
-
-**Yes.**
+# Another Example
 
 ```java
-class Demo implements A, B, C {
+class Father {
 
+    void property() {
+        System.out.println("Father Property");
+    }
+}
+
+class Mother {
+
+    void property() {
+        System.out.println("Mother Property");
+    }
+}
+
+class Child extends Father, Mother { }    // ❌ Not Allowed
+```
+
+If:
+
+```java
+Child c = new Child();
+
+c.property();
+```
+
+Which method should be called?
+
+Java cannot decide.
+
+---
+
+# Diamond Representation
+
+```text
+          A
+        /   \
+       B     C
+        \   /
+          D
+```
+
+When `D` calls a method inherited from `A`, ambiguity may arise.
+
+This is called the **Diamond Problem**.
+
+---
+
+# How Java Solves This
+
+Java allows:
+
+```java
+class B extends A { }
+```
+
+But **not**:
+
+```java
+class D extends B, C { }    // ❌
+```
+
+This eliminates ambiguity.
+
+---
+
+# Real-Life Example 👨‍👩‍👦
+
+Imagine a child receives two different instructions:
+
+Father:
+
+> "Wake up at 6 AM."
+
+Mother:
+
+> "Wake up at 7 AM."
+
+The child doesn't know which instruction to follow.
+
+Similarly, Java cannot decide which inherited implementation should be used.
+
+---
+
+# Advantages of This Design
+
+- Prevents ambiguity.
+- Makes code easier to understand.
+- Simplifies method resolution.
+- Improves maintainability.
+
+---
+
+# How Does Java Achieve Multiple Inheritance Using Interfaces?
+
+## Answer
+
+Java supports **multiple inheritance through interfaces**.
+
+A class can implement **multiple interfaces** because interfaces define **behavior (contracts)** rather than object state.
+
+If conflicts occur (such as two default methods with the same signature), Java requires the programmer to resolve them explicitly.
+
+> **One-line Answer (Interview)**
+>
+> **Java achieves multiple inheritance by allowing a class to implement multiple interfaces using the `implements` keyword.**
+
+---
+
+# Example
+
+```java
+interface Camera {
+
+    void takePhoto();
+}
+
+interface MusicPlayer {
+
+    void playMusic();
+}
+
+class Smartphone implements Camera, MusicPlayer {
+
+    @Override
+    public void takePhoto() {
+        System.out.println("Taking Photo");
+    }
+
+    @Override
+    public void playMusic() {
+        System.out.println("Playing Music");
+    }
+
+    public static void main(String[] args) {
+
+        Smartphone phone = new Smartphone();
+
+        phone.takePhoto();
+        phone.playMusic();
+    }
 }
 ```
 
+### Output
+
+```text
+Taking Photo
+Playing Music
+```
+
 ---
 
-## Which one should you prefer?
+# Why is This Safe?
 
-- Use an **abstract class** when classes share common state or implementation.
-- Use an **interface** when you need to define a common contract or support multiple inheritance.
+Interfaces usually contain **method declarations**, not object state.
+
+The implementing class provides the implementation, so there is no ambiguity.
+
+---
+
+# Real-Life Example 📱
+
+A smartphone can act as:
+
+- Camera
+- Music Player
+- GPS
+- Phone
+
+Instead of inheriting from multiple classes, it implements multiple interfaces.
+
+---
+
+# Quick Interview Revision
+
+- Multiple inheritance through classes → ❌ Not Supported
+- Multiple inheritance through interfaces → ✅ Supported
 
 ---
 
 # Easy Trick to Remember
 
 ```text
-Abstract Class
+Class
 
-✔ State
-✔ Constructor
-✔ Partial Implementation
+extends → One Class
 
-Interface
+implements → Many Interfaces
+```
 
-✔ Contract
-✔ Multiple Inheritance
-✔ No Object State
+# What Happens if Two Interfaces Contain Methods with the Same Signature?
+
+## Answer
+
+If two interfaces contain **abstract methods** with the **same signature**, there is **no conflict**.
+
+The implementing class only needs to provide **one implementation** of that method.
+
+> **One-line Answer (Interview)**
+>
+> **If two interfaces have the same abstract method signature, the implementing class provides a single implementation that satisfies both interfaces.**
+
+---
+
+# Example
+
+```java
+interface A {
+
+    void display();
+}
+
+interface B {
+
+    void display();
+}
+
+class Demo implements A, B {
+
+    @Override
+    public void display() {
+        System.out.println("Display Method");
+    }
+
+    public static void main(String[] args) {
+
+        Demo obj = new Demo();
+
+        obj.display();
+    }
+}
+```
+
+### Output
+
+```text
+Display Method
+```
+
+---
+
+# Why is There No Ambiguity?
+
+Both interfaces only declare **what** should be done.
+
+Neither provides an implementation.
+
+Therefore, the implementing class supplies the implementation, eliminating ambiguity.
+
+---
+
+# Interview Tip
+
+This is **different** from two interfaces having the **same default method**, which **does** create a conflict.
+
+# 53. What Happens if Two Interfaces Provide the Same Default Method?
+
+## Answer
+
+If two interfaces provide a **default method with the same signature**, the implementing class **must override** the method.
+
+Otherwise, the compiler reports an error because Java cannot decide which default implementation to use.
+
+> **One-line Answer (Interview)**
+>
+> **When two interfaces provide the same default method, the implementing class must override it to resolve the conflict.**
+
+---
+
+# Example
+
+```java
+interface A {
+
+    default void show() {
+        System.out.println("A");
+    }
+}
+
+interface B {
+
+    default void show() {
+        System.out.println("B");
+    }
+}
+
+class Demo implements A, B {
+
+    @Override
+    public void show() {
+        System.out.println("Resolved");
+    }
+
+    public static void main(String[] args) {
+
+        Demo obj = new Demo();
+
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+Resolved
+```
+
+---
+
+# Calling Both Default Methods
+
+You can explicitly invoke both interface implementations.
+
+```java
+class Demo implements A, B {
+
+    @Override
+    public void show() {
+
+        A.super.show();
+
+        B.super.show();
+    }
+}
+```
+
+### Output
+
+```text
+A
+B
+```
+
+---
+
+# Why?
+
+Both interfaces provide an implementation, so Java cannot choose automatically.
+
+The programmer must resolve the ambiguity.
+
+---
+
+# Easy Trick
+
+```text
+Two Default Methods
+
+↓
+
+Override Required
+```
+
+# What is a Default Method in an Interface?
+
+## Definition
+
+A **default method** is a method inside an interface that has a **method body**.
+
+It is declared using the `default` keyword.
+
+Default methods were introduced in **Java 8** to allow new methods to be added to interfaces **without breaking existing implementations**.
+
+> **One-line Definition (Interview)**
+>
+> **A default method is a method with an implementation inside an interface, declared using the `default` keyword.**
+
+---
+
+# Syntax
+
+```java
+interface Animal {
+
+    default void eat() {
+        System.out.println("Animal is eating");
+    }
+}
+```
+
+---
+
+# Example
+
+```java
+interface Animal {
+
+    default void eat() {
+        System.out.println("Animal is eating");
+    }
+}
+
+class Dog implements Animal {
+
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Dog d = new Dog();
+
+        d.eat();
+    }
+}
+```
+
+### Output
+
+```text
+Animal is eating
+```
+
+---
+
+# Can It Be Overridden?
+
+**Yes.**
+
+```java
+class Dog implements Animal {
+
+    @Override
+    public void eat() {
+        System.out.println("Dog is eating");
+    }
+}
+```
+
+---
+
+# Why Were Default Methods Introduced?
+
+Suppose an interface is used by thousands of classes.
+
+Adding a new abstract method would force every class to implement it.
+
+Default methods allow new functionality to be added without breaking existing code.
+
+---
+
+# Quick Interview Revision
+
+- Introduced in **Java 8**
+- Declared using `default`
+- Has an implementation
+- Can be overridden
+- Supports backward compatibility
+
+---
+
+# Easy Trick
+
+```text
+default
+
+✔ Method Body
+✔ Can Override
+✔ Java 8
+```
+
+# What is a Static Method in an Interface?
+
+## Definition
+
+A **static method** in an interface is a method that belongs to the **interface itself**, not to the implementing class.
+
+It is declared using the `static` keyword and is called using the **interface name**.
+
+Static methods were introduced in **Java 8**.
+
+> **One-line Definition (Interview)**
+>
+> **A static method in an interface belongs to the interface and is invoked using the interface name.**
+
+---
+
+# Example
+
+```java
+interface Animal {
+
+    static void info() {
+        System.out.println("Animal Interface");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal.info();
+    }
+}
+```
+
+### Output
+
+```text
+Animal Interface
+```
+
+---
+
+# Can a Static Interface Method Be Overridden?
+
+**No.**
+
+Static methods belong to the interface and are **not inherited** by implementing classes.
+
+```java
+class Dog implements Animal {
+
+    static void info() {
+        System.out.println("Dog");
+    }
+}
+```
+
+This is **not overriding**.
+
+---
+
+# Why Use Static Methods?
+
+- Utility methods related to the interface.
+- Common helper methods.
+- Avoid creating separate utility classes.
+
+---
+
+# Static Method vs Default Method
+
+| Static Method | Default Method |
+|---------------|----------------|
+| Belongs to the interface | Inherited by implementing classes |
+| Called using interface name | Called using object |
+| Cannot be overridden | Can be overridden |
+| Introduced in Java 8 | Introduced in Java 8 |
+
+---
+
+# Quick Interview Revision
+
+- Introduced in Java 8.
+- Belongs to the interface.
+- Called using the interface name.
+- Cannot be overridden.
+
+---
+
+# Easy Trick
+
+```text
+static Interface Method
+
+✔ Interface Name
+✔ No Object Needed
+✔ Cannot Override
 ```
 
 ### Mnemonic
 
-> **"Abstract Class = Shared Implementation, Interface = Shared Contract."**
+> **"Default Methods are Inherited, Static Methods Stay with the Interface."**
