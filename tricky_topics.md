@@ -1309,3 +1309,670 @@ Similarly, the child's static method **hides** the parent's static method.
 | Overridden Instance Method | Object Type | ✅ Yes |
 
 ---
+
+#  Explain Dynamic Method Dispatch in Java.
+
+## Definition
+
+**Dynamic Method Dispatch (DMD)** is the mechanism by which Java determines **which overridden method to execute at runtime** based on the **actual object type**, not the reference type.
+
+It is the foundation of **Runtime Polymorphism** in Java.
+
+> **One-line Definition (Interview)**
+>
+> **Dynamic Method Dispatch is the process of resolving an overridden method call at runtime based on the actual object type.**
+
+---
+
+# How Does It Work?
+
+Suppose:
+
+```java
+Parent obj = new Child();
+```
+
+Here:
+
+- **Reference Type** → `Parent`
+- **Object Type** → `Child`
+
+When an overridden method is called:
+
+```java
+obj.show();
+```
+
+Java ignores the reference type and checks the **actual object type**.
+
+Since the object is `Child`, Java executes:
+
+```java
+Child.show();
+```
+
+---
+
+# Example
+
+```java
+class Animal {
+
+    void sound() {
+        System.out.println("Animal makes a sound");
+    }
+}
+
+class Dog extends Animal {
+
+    @Override
+    void sound() {
+        System.out.println("Dog barks");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal obj = new Dog();
+
+        obj.sound();
+    }
+}
+```
+
+### Output
+
+```text
+Dog barks
+```
+
+---
+
+# How Java Resolves the Method
+
+```java
+Animal obj = new Dog();
+```
+
+Compile Time
+
+```text
+Reference Type = Animal
+
+Compiler checks:
+
+Does Animal have sound()?
+
+✔ Yes
+```
+
+Runtime
+
+```text
+Actual Object = Dog
+
+Dog overrides sound()
+
+↓
+
+Dog.sound() executes
+```
+
+---
+
+# Memory Representation
+
+```text
+Stack
+
+Animal obj
+      │
+      ▼
+
+Heap
+
+Dog Object
+```
+
+The reference is `Animal`, but the object in memory is `Dog`.
+
+---
+
+# Dynamic Method Dispatch Flow
+
+```text
+Method Call
+
+obj.sound()
+
+      │
+      ▼
+
+Compiler
+
+Checks Reference Type
+
+      │
+      ▼
+
+Runtime
+
+Checks Object Type
+
+      │
+      ▼
+
+Calls Child's Overridden Method
+```
+
+---
+
+# Important Points
+
+Dynamic Method Dispatch applies **only to overridden instance methods**.
+
+It **does not apply** to:
+
+- Variables
+- Static methods
+- Constructors
+
+---
+
+# Real-Life Example 🚗
+
+```java
+Vehicle v = new Car();
+```
+
+When:
+
+```java
+v.start();
+```
+
+Java checks the object.
+
+If the object is `Car`, then:
+
+```text
+Car.start()
+```
+
+is executed.
+
+If tomorrow:
+
+```java
+v = new Bike();
+```
+
+Then:
+
+```text
+Bike.start()
+```
+
+is executed.
+
+The same reference behaves differently based on the object.
+
+---
+
+# Advantages
+
+- Supports Runtime Polymorphism.
+- Makes applications flexible.
+- Reduces code duplication.
+- Promotes loose coupling.
+
+---
+
+# Quick Interview Revision
+
+- Runtime feature.
+- Based on object type.
+- Works only for overridden instance methods.
+- Foundation of Runtime Polymorphism.
+
+---
+
+# 61. ⭐ What is Upcasting?
+
+## Definition
+
+**Upcasting** is the process of converting a **child class reference into a parent class reference**.
+
+It happens **automatically (implicitly)** and is completely safe.
+
+```java
+Parent obj = new Child();
+```
+
+Here:
+
+- `Parent` → Reference Type
+- `Child` → Object Type
+
+> **One-line Definition (Interview)**
+>
+> **Upcasting is assigning a child class object to a parent class reference.**
+
+---
+
+# Example
+
+```java
+class Animal {
+
+    void sound() {
+        System.out.println("Animal");
+    }
+}
+
+class Dog extends Animal {
+
+    @Override
+    void sound() {
+        System.out.println("Dog");
+    }
+
+    void bark() {
+        System.out.println("Bark");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal obj = new Dog();
+
+        obj.sound();
+
+        // obj.bark(); ❌
+    }
+}
+```
+
+### Output
+
+```text
+Dog
+```
+
+---
+
+# Why Use Upcasting?
+
+- Achieves Runtime Polymorphism.
+- Allows generic programming.
+- Promotes loose coupling.
+
+---
+
+# Characteristics
+
+- ✔ Implicit (automatic)
+- ✔ Safe
+- ✔ No cast required
+- ✔ Parent reference → Child object
+
+---
+
+# Interview Tip
+
+```java
+Animal obj = new Dog();
+```
+
+This single line is the most common example of **Upcasting**.
+
+---
+
+# Easy Trick
+
+```text
+Child
+
+↓
+
+Parent
+
+= Upcasting
+```
+
+# 62. ⭐ What is Downcasting?
+
+## Definition
+
+**Downcasting** is the process of converting a **parent class reference back to a child class reference**.
+
+It is **explicit** and requires a type cast.
+
+```java
+Child obj = (Child) parentRef;
+```
+
+> **One-line Definition (Interview)**
+>
+> **Downcasting is converting a parent reference into a child reference using explicit casting.**
+
+---
+
+# Example
+
+```java
+class Animal {
+
+    void sound() {
+        System.out.println("Animal");
+    }
+}
+
+class Dog extends Animal {
+
+    void bark() {
+        System.out.println("Dog Barks");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal obj = new Dog();     // Upcasting
+
+        Dog d = (Dog) obj;          // Downcasting
+
+        d.bark();
+    }
+}
+```
+
+### Output
+
+```text
+Dog Barks
+```
+
+---
+
+# Why Do We Need Downcasting?
+
+A parent reference cannot directly access child-specific members.
+
+```java
+Animal obj = new Dog();
+
+// obj.bark(); ❌
+```
+
+Downcasting gives the reference its child type back.
+
+```java
+Dog d = (Dog) obj;
+
+d.bark();
+```
+
+---
+
+# Characteristics
+
+- Explicit cast required.
+- Used to access child-specific methods.
+- Safe only if the object is actually of the child type.
+
+---
+
+# Interview Tip
+
+Always verify the object's type before downcasting.
+
+```java
+if (obj instanceof Dog) {
+
+    Dog d = (Dog) obj;
+
+    d.bark();
+}
+```
+
+---
+
+# Easy Trick
+
+```text
+Parent
+
+↓
+
+Child
+
+= Downcasting
+```
+
+# 63. When Can Downcasting Cause `ClassCastException`?
+
+## Answer
+
+A **`ClassCastException`** occurs when you try to **downcast a parent reference to a child type that the actual object is not**.
+
+In other words, the cast is valid only if the object was originally created as that child class (or one of its subclasses).
+
+> **One-line Answer (Interview)**
+>
+> **Downcasting throws `ClassCastException` when the actual object is not an instance of the target child class.**
+
+---
+
+# Correct Downcasting
+
+```java
+class Animal { }
+
+class Dog extends Animal {
+
+    void bark() {
+        System.out.println("Bark");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal obj = new Dog();
+
+        Dog d = (Dog) obj;
+
+        d.bark();
+    }
+}
+```
+
+### Output
+
+```text
+Bark
+```
+
+✔ Safe because the object is actually a `Dog`.
+
+---
+
+# Incorrect Downcasting
+
+```java
+class Animal { }
+
+class Dog extends Animal { }
+
+class Cat extends Animal { }
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Animal obj = new Cat();
+
+        Dog d = (Dog) obj;     // ❌ Runtime Exception
+    }
+}
+```
+
+### Runtime Exception
+
+```text
+Exception in thread "main"
+java.lang.ClassCastException
+```
+
+---
+
+# Why Does This Happen?
+
+```java
+Animal obj = new Cat();
+```
+
+The actual object is:
+
+```text
+Cat
+```
+
+Trying to convert it into:
+
+```text
+Dog
+```
+
+is invalid because a `Cat` is **not** a `Dog`.
+
+---
+
+# Safe Way: Using `instanceof`
+
+```java
+Animal obj = new Cat();
+
+if (obj instanceof Dog) {
+
+    Dog d = (Dog) obj;
+
+} else {
+
+    System.out.println("Cannot Cast");
+}
+```
+
+### Output
+
+```text
+Cannot Cast
+```
+
+Using `instanceof` prevents `ClassCastException`.
+
+---
+
+# Memory Representation
+
+### Safe
+
+```text
+Animal obj
+
+      │
+      ▼
+
+Dog Object
+
+↓
+
+Dog d = (Dog) obj
+
+✔ Valid
+```
+
+---
+
+### Unsafe
+
+```text
+Animal obj
+
+      │
+      ▼
+
+Cat Object
+
+↓
+
+Dog d = (Dog) obj
+
+❌ ClassCastException
+```
+
+---
+
+# Quick Interview Revision
+
+- Downcasting is explicit.
+- Safe only if the object is actually of the target child class.
+- Invalid downcasting causes `ClassCastException`.
+- Use `instanceof` before downcasting.
+
+---
+
+# Interview Follow-up Questions
+
+## Does upcasting throw `ClassCastException`?
+
+**No.**
+
+Upcasting is always safe.
+
+---
+
+## How can we avoid `ClassCastException`?
+
+Use:
+
+```java
+instanceof
+```
+
+before downcasting.
+
+---
+
+## Is `ClassCastException` a compile-time error?
+
+**No.**
+
+It is a **runtime exception**.
+
+---
+
+# Easy Trick to Remember
+
+```text
+Upcasting
+
+✔ Safe
+
+Downcasting
+
+✔ Explicit
+
+❌ Wrong Object → ClassCastException
+```
+
+### Mnemonic
+
+> **"Cast Only If the Object Really Is That Child."**
