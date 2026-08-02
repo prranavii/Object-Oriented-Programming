@@ -351,7 +351,7 @@ This is the foundation of **Runtime Polymorphism**.
 
 ---
 
-# 57. Which Members are Decided Using Reference Type and Which Using Object Type?
+# Which Members are Decided Using Reference Type and Which Using Object Type?
 
 ## Definition
 
@@ -642,5 +642,670 @@ This provides both:
 
 - **Type safety**
 - **Runtime flexibility**
+
+---
+
+# What Happens When Parent and Child Have an Instance Variable with the Same Name?
+
+## Answer
+
+When a **parent class and a child class have instance variables with the same name**, the child variable **hides** the parent variable.
+
+Unlike methods, **instance variables are not overridden**.
+
+The variable that is accessed depends on the **reference type**, **not** on the object type.
+
+> **One-line Answer (Interview)**
+>
+> **Instance variables are not overridden. If both parent and child have variables with the same name, the variable accessed is determined by the reference type at compile time.**
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    int x = 10;
+}
+
+class Child extends Parent {
+
+    int x = 20;
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Parent p = new Parent();
+        Child c = new Child();
+        Parent obj = new Child();
+
+        System.out.println(p.x);
+        System.out.println(c.x);
+        System.out.println(obj.x);
+    }
+}
+```
+
+### Output
+
+```text
+10
+20
+10
+```
+
+---
+
+# Explanation
+
+## Case 1
+
+```java
+Parent p = new Parent();
+
+System.out.println(p.x);
+```
+
+Output:
+
+```text
+10
+```
+
+The reference and object are both `Parent`.
+
+---
+
+## Case 2
+
+```java
+Child c = new Child();
+
+System.out.println(c.x);
+```
+
+Output:
+
+```text
+20
+```
+
+The reference and object are both `Child`.
+
+---
+
+## Case 3 (Most Important)
+
+```java
+Parent obj = new Child();
+
+System.out.println(obj.x);
+```
+
+Output:
+
+```text
+10
+```
+
+Although the object is `Child`, Java prints the **Parent's variable**.
+
+### Why?
+
+Variables are resolved at **compile time**.
+
+The compiler checks only the **reference type**.
+
+Reference Type:
+
+```text
+Parent
+```
+
+Therefore, Java accesses:
+
+```java
+Parent.x
+```
+
+---
+
+# Memory Representation
+
+```java
+Parent obj = new Child();
+```
+
+```text
+Stack
+
+obj
+ │
+ ▼
+
+Heap
+
+Child Object
+
+---------------
+Parent.x = 10
+Child.x  = 20
+---------------
+```
+
+The `Child` object actually contains **both variables**:
+
+- `Parent.x`
+- `Child.x`
+
+The reference determines **which one is accessible**.
+
+---
+
+# Variable Hiding
+
+This behavior is called **Variable Hiding** (also known as **Field Hiding**).
+
+The child variable **hides** the parent variable.
+
+It is **not** method overriding.
+
+---
+
+# Variable Hiding vs Method Overriding
+
+```java
+class Parent {
+
+    int x = 10;
+
+    void show() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+
+    int x = 20;
+
+    @Override
+    void show() {
+        System.out.println("Child");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child();
+
+        System.out.println(obj.x);
+
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+10
+Child
+```
+
+### Why?
+
+#### Variable
+
+```java
+obj.x
+```
+
+Reference type decides.
+
+Output:
+
+```text
+10
+```
+
+---
+
+#### Method
+
+```java
+obj.show();
+```
+
+Object type decides.
+
+Output:
+
+```text
+Child
+```
+
+---
+
+# Accessing Both Variables
+
+```java
+class Parent {
+
+    int x = 10;
+}
+
+class Child extends Parent {
+
+    int x = 20;
+
+    void display() {
+
+        System.out.println(x);
+
+        System.out.println(super.x);
+    }
+}
+```
+
+### Output
+
+```text
+20
+10
+```
+
+Here:
+
+- `x` → Child's variable.
+- `super.x` → Parent's variable.
+
+---
+
+# Real-Life Example 👨‍👦
+
+Imagine a father and son both have a bank account named **Balance**.
+
+```text
+Father Balance = ₹10,000
+
+Son Balance = ₹20,000
+```
+
+If someone asks using the **Father's identity**, they see the father's balance.
+
+If they ask using the **Son's identity**, they see the son's balance.
+
+Similarly:
+
+- **Reference Type** acts like the identity.
+- It determines which variable is accessed.
+
+---
+
+# Why Doesn't Variable Overriding Exist?
+
+Variables represent **state**, not behavior.
+
+Allowing runtime overriding of variables would make programs confusing and unpredictable.
+
+Therefore, Java resolves variables at **compile time** using the reference type.
+
+---
+
+# Quick Interview Revision
+
+- Variables are **not overridden**.
+- Variables are **hidden**.
+- Variable access depends on the **reference type**.
+- Method execution depends on the **object type**.
+
+---
+
+# Summary Table
+
+| Member | Decided By | Polymorphism |
+|---------|------------|--------------|
+| Instance Variable | Reference Type | ❌ No |
+| Static Variable | Reference Type | ❌ No |
+| Static Method | Reference Type | ❌ No |
+| Overridden Instance Method | Object Type | ✅ Yes |
+
+---
+
+# What Happens When Parent and Child Have a Static Method with the Same Signature?
+
+## Answer
+
+When a **parent class and a child class have static methods with the same signature**, the child method **does not override** the parent method.
+
+Instead, it **hides** the parent method. This is called **Method Hiding**.
+
+The method that gets executed is determined by the **reference type**, not the object type.
+
+> **One-line Answer (Interview)**
+>
+> **If Parent and Child have static methods with the same signature, the child method hides the parent method. This is Method Hiding, and the method call is resolved using the reference type at compile time.**
+
+---
+
+# Why Doesn't Overriding Happen?
+
+Method overriding requires **runtime polymorphism**.
+
+Static methods:
+
+- Belong to the **class**, not the object.
+- Are resolved at **compile time**.
+- Cannot participate in runtime polymorphism.
+
+Therefore, static methods are **hidden**, not overridden.
+
+---
+
+# Example
+
+```java
+class Parent {
+
+    static void display() {
+        System.out.println("Parent Static Method");
+    }
+}
+
+class Child extends Parent {
+
+    static void display() {
+        System.out.println("Child Static Method");
+    }
+
+    public static void main(String[] args) {
+
+        Parent p = new Parent();
+        Child c = new Child();
+        Parent obj = new Child();
+
+        p.display();
+        c.display();
+        obj.display();
+    }
+}
+```
+
+### Output
+
+```text
+Parent Static Method
+Child Static Method
+Parent Static Method
+```
+
+---
+
+# Explanation
+
+## Case 1
+
+```java
+Parent p = new Parent();
+
+p.display();
+```
+
+Output:
+
+```text
+Parent Static Method
+```
+
+Reference type:
+
+```text
+Parent
+```
+
+---
+
+## Case 2
+
+```java
+Child c = new Child();
+
+c.display();
+```
+
+Output:
+
+```text
+Child Static Method
+```
+
+Reference type:
+
+```text
+Child
+```
+
+---
+
+## Case 3 (Most Important)
+
+```java
+Parent obj = new Child();
+
+obj.display();
+```
+
+Output:
+
+```text
+Parent Static Method
+```
+
+Although the object is `Child`, Java executes the **Parent's static method**.
+
+### Why?
+
+Static methods belong to the **class**.
+
+The compiler checks the **reference type**, which is:
+
+```text
+Parent
+```
+
+Therefore, Java executes:
+
+```java
+Parent.display();
+```
+
+---
+
+# Memory Representation
+
+```java
+Parent obj = new Child();
+```
+
+```text
+Reference Type
+
+Parent obj
+      │
+      ▼
+
+Object Type
+
+Child Object
+```
+
+For **static methods**, Java ignores the object type and uses only the **reference type**.
+
+---
+
+# Method Hiding
+
+This behavior is known as **Method Hiding**.
+
+The child class defines another static method with the same signature, but it **does not replace** the parent's method.
+
+Both methods exist independently.
+
+---
+
+# Method Hiding vs Method Overriding
+
+| Method Hiding | Method Overriding |
+|---------------|-------------------|
+| Static methods | Instance methods |
+| Compile-time binding | Runtime binding |
+| Reference type decides | Object type decides |
+| No runtime polymorphism | Supports runtime polymorphism |
+
+---
+
+# Comparison Example
+
+```java
+class Parent {
+
+    static void display() {
+        System.out.println("Parent Static");
+    }
+
+    void show() {
+        System.out.println("Parent Instance");
+    }
+}
+
+class Child extends Parent {
+
+    static void display() {
+        System.out.println("Child Static");
+    }
+
+    @Override
+    void show() {
+        System.out.println("Child Instance");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child();
+
+        obj.display();
+        obj.show();
+    }
+}
+```
+
+### Output
+
+```text
+Parent Static
+Child Instance
+```
+
+### Why?
+
+#### Static Method
+
+```java
+obj.display();
+```
+
+Reference type decides.
+
+Output:
+
+```text
+Parent Static
+```
+
+---
+
+#### Instance Method
+
+```java
+obj.show();
+```
+
+Object type decides.
+
+Output:
+
+```text
+Child Instance
+```
+
+---
+
+# Calling Static Methods (Recommended Way)
+
+Although Java allows calling a static method using an object:
+
+```java
+Parent obj = new Child();
+
+obj.display();      // ✔ Allowed but not recommended
+```
+
+The preferred approach is:
+
+```java
+Parent.display();
+Child.display();
+```
+
+This clearly indicates that the method belongs to the class.
+
+---
+
+# Real-Life Example 🏫
+
+Imagine a school.
+
+Both the **School** and the **Computer Department** have a notice called:
+
+```text
+displayNotice()
+```
+
+The notice you see depends on **which office you ask**:
+
+- Ask the School → School notice.
+- Ask the Department → Department notice.
+
+The department's notice does **not replace** the school's notice.
+
+Similarly, the child's static method **hides** the parent's static method.
+
+---
+
+# Quick Interview Revision
+
+- Static methods are **not overridden**.
+- Static methods are **hidden**.
+- Static methods use **compile-time binding**.
+- The **reference type** determines which static method is called.
+
+---
+
+# Summary Table
+
+| Member | Decided By | Runtime Polymorphism |
+|---------|------------|----------------------|
+| Instance Variable | Reference Type | ❌ No |
+| Static Variable | Reference Type | ❌ No |
+| Static Method | Reference Type | ❌ No (Method Hiding) |
+| Overridden Instance Method | Object Type | ✅ Yes |
 
 ---
