@@ -1291,3 +1291,690 @@ Exact Object
 ### Mnemonic
 
 > **"`hashCode()` Finds, `equals()` Confirms."**
+
+# 88. What is the Difference Between Shallow Copy and Deep Copy?
+
+## Definition
+
+Copying an object means creating another object with the same data.
+
+There are two types of object copying in Java:
+
+1. **Shallow Copy**
+2. **Deep Copy**
+
+The main difference is **how reference-type (non-primitive) fields are copied**.
+
+> **One-line Answer (Interview)**
+>
+> **A shallow copy copies object references, so both objects share the same referenced objects. A deep copy creates copies of the referenced objects as well, making the two objects completely independent.**
+
+---
+
+# Shallow Copy
+
+## Definition
+
+A **shallow copy** creates a new object but **copies the references** of nested objects instead of creating new copies of them.
+
+As a result:
+
+- Primitive fields are copied.
+- Reference fields point to the **same objects**.
+
+Changes made to a shared referenced object are visible in both copies.
+
+---
+
+# Example
+
+```java
+class Address {
+
+    String city;
+
+    Address(String city) {
+        this.city = city;
+    }
+}
+
+class Student {
+
+    String name;
+    Address address;
+
+    Student(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Address a1 = new Address("Delhi");
+
+        Student s1 = new Student("Pranavi", a1);
+
+        // Shallow Copy
+        Student s2 = new Student(s1.name, s1.address);
+
+        s2.address.city = "Noida";
+
+        System.out.println(s1.address.city);
+        System.out.println(s2.address.city);
+    }
+}
+```
+
+### Output
+
+```text
+Noida
+Noida
+```
+
+---
+
+# Why?
+
+Both objects share the **same `Address` object**.
+
+Memory Representation:
+
+```text
+s1 ------------------┐
+                     │
+                     ▼
+                Address("Delhi")
+                     ▲
+                     │
+s2 ------------------┘
+```
+
+After changing:
+
+```java
+s2.address.city = "Noida";
+```
+
+Both objects see the updated value.
+
+---
+
+# Deep Copy
+
+## Definition
+
+A **deep copy** creates a **new object** and also creates **new copies of all referenced objects**.
+
+As a result:
+
+- Primitive fields are copied.
+- Reference fields are also copied into **new objects**.
+
+Both objects become completely independent.
+
+---
+
+# Example
+
+```java
+class Address {
+
+    String city;
+
+    Address(String city) {
+        this.city = city;
+    }
+}
+
+class Student {
+
+    String name;
+    Address address;
+
+    Student(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Address a1 = new Address("Delhi");
+
+        Student s1 = new Student("Pranavi", a1);
+
+        // Deep Copy
+        Student s2 = new Student(
+                s1.name,
+                new Address(s1.address.city)
+        );
+
+        s2.address.city = "Noida";
+
+        System.out.println(s1.address.city);
+        System.out.println(s2.address.city);
+    }
+}
+```
+
+### Output
+
+```text
+Delhi
+Noida
+```
+
+---
+
+# Why?
+
+A **new `Address` object** is created.
+
+Memory Representation:
+
+```text
+s1 -------------> Address("Delhi")
+
+s2 -------------> Address("Delhi")
+```
+
+Now both objects have different `Address` objects.
+
+Changing one does not affect the other.
+
+---
+
+# Comparison
+
+## Shallow Copy
+
+```text
+Student s1
+
+        │
+        ▼
+
+   Address Object
+
+        ▲
+        │
+
+Student s2
+```
+
+Both share the same nested object.
+
+---
+
+## Deep Copy
+
+```text
+Student s1
+
+        │
+        ▼
+
+ Address Object 1
+
+
+Student s2
+
+        │
+        ▼
+
+ Address Object 2
+```
+
+Each object has its own copy.
+
+---
+
+# Shallow Copy vs Deep Copy
+
+| Feature | Shallow Copy | Deep Copy |
+|----------|--------------|-----------|
+| New Object Created | ✅ Yes | ✅ Yes |
+| Primitive Fields | Copied | Copied |
+| Reference Fields | References are copied | New referenced objects are created |
+| Shared Nested Objects | ✅ Yes | ❌ No |
+| Changes Affect Original | ✅ Yes | ❌ No |
+| Memory Usage | Less | More |
+| Performance | Faster | Slower |
+
+---
+
+# Real-Life Example 📚
+
+Imagine photocopying a notebook.
+
+### Shallow Copy
+
+You make a copy of the cover page, but both notebooks contain a **shared removable page**.
+
+If someone edits that shared page, **both notebooks reflect the change**.
+
+---
+
+### Deep Copy
+
+You photocopy **every page**.
+
+Now each notebook is completely independent.
+
+Editing one notebook does not affect the other.
+
+---
+
+# Advantages
+
+## Shallow Copy
+
+- Faster.
+- Uses less memory.
+- Suitable when shared objects are acceptable.
+
+---
+
+## Deep Copy
+
+- Objects are completely independent.
+- Prevents accidental modifications.
+- Safer for mutable objects.
+
+---
+
+# Quick Interview Revision
+
+- **Shallow Copy** → Copies references.
+- **Deep Copy** → Copies the entire object graph.
+- Shallow copy shares nested objects.
+- Deep copy creates independent nested objects.
+
+---
+
+# Interview Follow-up Questions
+
+## Which copy is created by `Object.clone()`?
+
+By default, `Object.clone()` performs a **shallow copy**.
+
+---
+
+## Which copy is safer?
+
+**Deep Copy**, because changes to one object do not affect the other.
+
+---
+
+## Which copy uses more memory?
+
+**Deep Copy**, because it creates additional objects.
+
+---
+
+## When should you use Deep Copy?
+
+When objects contain **mutable reference fields** that should not be shared.
+
+---
+
+# Easy Trick to Remember
+
+```text
+Shallow Copy
+
+Object
+   │
+   ▼
+Shared References
+
+Deep Copy
+
+Object
+   │
+   ▼
+New References
+```
+
+### Mnemonic
+
+> **"Shallow Shares, Deep Duplicates."**
+
+# 90. What is an Immutable Class?
+
+## Definition
+
+An **immutable class** is a class whose **objects cannot be modified after they are created**.
+
+Once an object is initialized, its state (data) remains **unchanged** throughout its lifetime.
+
+If you want different values, you must create a **new object** instead of modifying the existing one.
+
+> **One-line Definition (Interview)**
+>
+> **An immutable class is a class whose objects cannot be changed after creation.**
+
+---
+
+# Why Do We Need Immutable Classes?
+
+Immutable objects are:
+
+- Safe to share between multiple threads.
+- Easy to use because they cannot change unexpectedly.
+- More secure since data cannot be modified.
+- Frequently used as keys in collections like `HashMap`.
+
+The best example is the **`String`** class.
+
+---
+
+# Characteristics of an Immutable Class
+
+An immutable class should follow these rules:
+
+1. Declare the class as `final`.
+2. Make all fields `private` and `final`.
+3. Do not provide setter methods.
+4. Initialize fields using a constructor.
+5. Provide only getter methods.
+6. If the class contains mutable objects, return **defensive copies** instead of the original objects.
+
+---
+
+# Example
+
+```java
+final class Student {
+
+    private final int id;
+    private final String name;
+
+    public Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Student s = new Student(101, "Pranavi");
+
+        System.out.println(s.getId());
+        System.out.println(s.getName());
+
+        // s.setName("Riya");   // ❌ No setter available
+    }
+}
+```
+
+### Output
+
+```text
+101
+Pranavi
+```
+
+The object's data cannot be modified after creation.
+
+---
+
+# Why Make the Class `final`?
+
+```java
+final class Student { }
+```
+
+This prevents inheritance.
+
+If inheritance were allowed, a subclass could add setter methods or modify the object's behavior, breaking immutability.
+
+---
+
+# Why Make Fields `private final`?
+
+```java
+private final String name;
+```
+
+- **private** → Prevents direct access from outside the class.
+- **final** → Ensures the field can be assigned only once.
+
+---
+
+# Why No Setter Methods?
+
+Setter methods allow modification.
+
+```java
+public void setName(String name) {
+    this.name = name;
+}
+```
+
+❌ This would make the class mutable.
+
+Therefore, immutable classes provide **only getter methods**.
+
+---
+
+# Mutable Object Example
+
+Suppose the class contains an `Address` object.
+
+### Incorrect Implementation
+
+```java
+class Address {
+
+    String city;
+
+    Address(String city) {
+        this.city = city;
+    }
+}
+
+final class Student {
+
+    private final Address address;
+
+    Student(Address address) {
+        this.address = address;
+    }
+
+    public Address getAddress() {
+        return address;    // ❌ Returns original object
+    }
+}
+```
+
+Now:
+
+```java
+Student s = new Student(new Address("Delhi"));
+
+s.getAddress().city = "Noida";
+```
+
+The internal state changes, so the class is **not truly immutable**.
+
+---
+
+# Correct Implementation (Defensive Copy)
+
+```java
+class Address {
+
+    String city;
+
+    Address(String city) {
+        this.city = city;
+    }
+}
+
+final class Student {
+
+    private final Address address;
+
+    Student(Address address) {
+        this.address = new Address(address.city);
+    }
+
+    public Address getAddress() {
+        return new Address(address.city);
+    }
+}
+```
+
+Now the original object cannot be modified from outside.
+
+---
+
+# Memory Representation
+
+```java
+Student s
+
+│
+
+├── id = 101
+
+└── name = "Pranavi"
+```
+
+After creation:
+
+```text
+No Changes Allowed
+```
+
+If you need different values:
+
+```java
+Student s2 = new Student(102, "Riya");
+```
+
+A **new object** is created.
+
+---
+
+# Real-Life Example 🛂
+
+Think of a **passport**.
+
+Once it is issued, details like:
+
+- Passport Number
+- Date of Birth
+- Name
+
+cannot be modified directly.
+
+If changes are required, a **new passport** is issued.
+
+Similarly, immutable objects are never modified—new objects are created instead.
+
+---
+
+# Advantages
+
+- Thread-safe.
+- Easy to cache and share.
+- Prevents accidental modification.
+- Reliable as keys in `HashMap`.
+- Simplifies debugging.
+
+---
+
+# Examples of Immutable Classes in Java
+
+- `String`
+- Wrapper classes (`Integer`, `Long`, `Double`, etc.)
+- `LocalDate`
+- `LocalTime`
+- `BigInteger`
+- `BigDecimal`
+
+---
+
+# Immutable Class vs Mutable Class
+
+| Immutable Class | Mutable Class |
+|-----------------|---------------|
+| Object cannot change | Object can change |
+| No setters | Has setters |
+| Fields are `final` | Fields may change |
+| Thread-safe | May require synchronization |
+| Example: `String` | Example: `StringBuilder` |
+
+---
+
+# Quick Interview Revision
+
+- Objects cannot be modified after creation.
+- Class is usually `final`.
+- Fields are `private final`.
+- No setter methods.
+- Use defensive copies for mutable fields.
+
+---
+
+# Interview Follow-up Questions
+
+## Why is `String` immutable?
+
+To improve security, thread safety, performance (string pool), and caching.
+
+---
+
+## Can an immutable class contain mutable objects?
+
+**Yes**, but it must use **defensive copying** to protect its internal state.
+
+---
+
+## Why should immutable classes be `final`?
+
+To prevent subclasses from modifying their behavior or state.
+
+---
+
+## Can immutable objects be shared between threads?
+
+**Yes.**
+
+Since their state never changes, they are inherently thread-safe.
+
+---
+
+# Easy Trick to Remember
+
+```text
+Immutable Class
+
+✔ final Class
+✔ private final Fields
+✔ No Setters
+✔ Constructor Initialization
+✔ Only Getters
+```
+
+### Mnemonic
+
+> **"Create Once, Never Change."**
