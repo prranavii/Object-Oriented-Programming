@@ -9,7 +9,7 @@ This repository contains comprehensive notes on **OOP concepts in Java**, design
 * 🎓 College Semester Exams
 * 💻 Placement Preparation
 * 🚀 Quick Revision
-* 📚 Self-Learning
+* 📚 Self-Learning 
 
 ## 📖 What's Included
 
