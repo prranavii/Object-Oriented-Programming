@@ -13,7 +13,7 @@ An **object** combines:
 
 OOP helps in building applications that are:
 - Modular
-- Reusable
+- Reusable 
 - Maintainable
 - Scalable
 
