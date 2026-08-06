@@ -13,7 +13,7 @@ Unlike methods, a constructor:
 > **One-line Definition (Interview)**
 >
 > **A constructor is a special member of a class used to initialize objects. It is automatically invoked when an object is created.**
-
+ 
 ---
 
 ## Why Do We Need Constructors?
