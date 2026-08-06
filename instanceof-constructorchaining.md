@@ -18,7 +18,7 @@ It is mainly used to **perform safe downcasting** and avoid `ClassCastException`
 ---
 
 # Syntax
-
+ 
 ```java
 object instanceof ClassName
 ```
