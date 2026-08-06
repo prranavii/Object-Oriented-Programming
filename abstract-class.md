@@ -15,7 +15,7 @@ An abstract class can contain:
 
 It is declared using the **`abstract`** keyword.
 
-> **One-line Definition (Interview)**
+> **One-line Definition (Interview)** 
 >
 > **An abstract class is a class that cannot be instantiated and may contain both abstract and concrete methods.**
 
