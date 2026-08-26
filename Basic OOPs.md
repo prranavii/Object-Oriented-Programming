@@ -6,7 +6,7 @@
 
 ## Definition
 Object-Oriented Programming (OOP) is a programming paradigm that organizes software around **objects** rather than functions.
-
+OOP is a way of writing programs by organizing the code around objects, just like we think about real-world things.
 An **object** combines:
 - **Data (State)** → Variables/Fields
 - **Behavior** → Methods/Functions
